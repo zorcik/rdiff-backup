@@ -270,7 +270,7 @@ def rename(rp_source, rp_dest):
 				rp_source.conn.os.chmod(rp_dest.path, 0700)
 				rp_source.conn.os.unlink(rp_dest.path)
 				rp_source.conn.os.rename(rp_source.path, rp_dest.path)
-			    
+
 		rp_dest.data = rp_source.data
 		rp_source.data = {'type': None}
 
@@ -286,7 +286,7 @@ def make_file_dict(filename):
 		try:
 			return C.make_file_dict(filename)
 		except OSError, error:
-			# Unicode filenames should be process by the Python version 
+			# Unicode filenames should be process by the Python version
 			if error.errno != errno.EILSEQ and error.errno != errno.EINVAL:
 				raise
 
@@ -294,7 +294,7 @@ def make_file_dict(filename):
 
 def make_file_dict_python(filename):
 	"""Create the data dictionary using a Python call to os.lstat
-	
+
 	We do this on Windows since Python's implementation is much better
 	than the one in cmodule.c    Eventually, we will move to using
 	this on all platforms since CPUs have gotten much faster than
@@ -369,7 +369,7 @@ def open_local_read(rpath):
 	return open(rpath.path, "rb")
 
 def get_incfile_info(basename):
-	"""Returns None or tuple of 
+	"""Returns None or tuple of
 	(is_compressed, timestr, type, and basename)"""
 	dotsplit = basename.split(".")
 	if dotsplit[-1] == "gz":
@@ -541,7 +541,7 @@ class RORPath:
 								  compare_eas = Globals.eas_active,
 								  compare_acls = Globals.acls_active,
 								  compare_win_acls = Globals.win_acls_active)
-							 
+
 	def __ne__(self, other): return not self.__eq__(other)
 
 	def __str__(self):
@@ -576,7 +576,7 @@ class RORPath:
 		for a regular file, 'dir' for a directory, 'dev' for a device
 		file, 'fifo' for a fifo, 'sock' for a socket, and 'sym' for a
 		symlink.
-		
+
 		"""
 		return self.data['type']
 	gettype = lstat
@@ -657,7 +657,7 @@ class RORPath:
 	def getctime(self):
 		"""Return change time in seconds"""
 		return self.data['ctime']
-	
+
 	def getinode(self):
 		"""Return inode number of file"""
 		return self.data['inode']
@@ -703,7 +703,7 @@ class RORPath:
 
 		"""
 		return self.data['filetype']
-	
+
 	def set_attached_filetype(self, type):
 		"""Set the type of the attached file"""
 		self.data['filetype'] = type
@@ -931,7 +931,7 @@ class RPath(RORPath):
 				# Some systems throw this error if try to set sticky bit
 				# on a non-directory. Remove sticky bit and try again.
 				log.Log("Warning: Unable to set permissions of %s to %o - "
-						"trying again without sticky bit (%o)" % (self.path, 
+						"trying again without sticky bit (%o)" % (self.path,
 						permissions, permissions & 06777), loglevel)
 				self.conn.os.chmod(self.path, permissions
 											  & 06777 & Globals.permission_mask)
@@ -990,8 +990,12 @@ class RPath(RORPath):
 
 	def rmdir(self):
 		log.Log("Removing directory " + self.path, 6)
-		self.conn.os.rmdir(self.path)
-		self.data = {'type': None}
+      try:
+         self.conn.os.rmdir(self.path)
+      except OSError as e:
+         log.Log("Exception: Cannot remove directory " + self.path, 6)
+         log.Log("I/O error({0}): {1}".format(e.errno, e.strerror))
+      self.data = {'type': None}
 
 	def listdir(self):
 		"""Return list of string paths returned by os.listdir"""
@@ -1045,7 +1049,7 @@ class RPath(RORPath):
 		if self.isowner(): return self.getperms() % 0200 >= 0100
 		elif self.isgroup(): return self.getperms() % 020 >= 010
 		else: return self.getperms() % 02 >= 01
-		
+
 	def isowner(self):
 		"""Return true if current process is owner of rp or root"""
 		try:
@@ -1234,7 +1238,7 @@ class RPath(RORPath):
 	def getinctime(self):
 		"""Return time in seconds of an increment file"""
 		return Time.stringtotime(self.inc_timestr)
-	
+
 	def getincbase(self):
 		"""Return the base filename of an increment file in rp form"""
 		if self.index:
