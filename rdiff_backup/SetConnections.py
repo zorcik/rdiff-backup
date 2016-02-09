@@ -135,15 +135,13 @@ def init_connection(remote_cmd):
 	if not remote_cmd: return Globals.local_connection
 
 	Log("Executing " + remote_cmd, 4)
-	if os.name == "nt":
+	if sys.version_info > (2, 4):
 		import subprocess
-		try:
-			process = subprocess.Popen(remote_cmd, shell=False, bufsize=0,
-								stdin=subprocess.PIPE, 
-								stdout=subprocess.PIPE)
-			(stdin, stdout) = (process.stdin, process.stdout)
-		except OSError:
-			(stdin, stdout) = (None, None)
+      shell = os.name != "nt"
+		process = subprocess.Popen(remote_cmd, shell=shell, bufsize=0,
+                                              stdin=subprocess.PIPE,
+                                              stdout=subprocess.PIPE)
+		(stdin, stdout) = (process.stdin, process.stdout)
 	else:
 		stdin, stdout = os.popen2(remote_cmd)
 	conn_number = len(Globals.connections)
@@ -171,7 +169,7 @@ information on this.  This message may also be displayed if the remote
 version of rdiff-backup is quite different from the local version (%s)."""
 					   % (exception, remote_cmd, Globals.version))
 	except OverflowError, exc:
-		Log.FatalError("""Integer overflow while attempting to establish the 
+		Log.FatalError("""Integer overflow while attempting to establish the
 remote connection by executing
 
     %s
@@ -180,10 +178,10 @@ Please make sure that nothing is printed (e.g., by your login shell) when this
 command executes. Try running this command:
 
     %s
-	
+
 which should only print out the text: rdiff-backup <version>""" % (remote_cmd,
 	remote_cmd.replace("--server", "--version")))
-		
+
 	if remote_version != Globals.version:
 		Log("Warning: Local version %s does not match remote version %s."
 			% (Globals.version, remote_version), 2)
