@@ -990,12 +990,12 @@ class RPath(RORPath):
 
 	def rmdir(self):
 		log.Log("Removing directory " + self.path, 6)
-      try:
-         self.conn.os.rmdir(self.path)
-      except OSError as e:
-         log.Log("Exception: Cannot remove directory " + self.path, 6)
-         log.Log("I/O error({0}): {1}".format(e.errno, e.strerror))
-      self.data = {'type': None}
+		try:
+			self.conn.os.rmdir(self.path)
+		except OSError as e:
+			log.Log("Exception: Cannot remove directory " + self.path, 6)
+			log.Log("I/O error({0}): {1}"+format(e.errno, e.strerror))
+		self.data = {'type': None}
 
 	def listdir(self):
 		"""Return list of string paths returned by os.listdir"""
