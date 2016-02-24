@@ -137,7 +137,7 @@ def init_connection(remote_cmd):
 	Log("Executing " + remote_cmd, 4)
 	if sys.version_info > (2, 4):
 		import subprocess
-      shell = os.name != "nt"
+		shell = os.name != "nt"
 		process = subprocess.Popen(remote_cmd, shell=shell, bufsize=0,
                                               stdin=subprocess.PIPE,
                                               stdout=subprocess.PIPE)
