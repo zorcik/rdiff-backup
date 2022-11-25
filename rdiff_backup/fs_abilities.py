@@ -44,7 +44,7 @@ class FSAbilities:
 	fsync_dirs = None # True if directories can be fsync'd
 	dir_inc_perms = None # True if regular files can have full permissions
 	resource_forks = None # True if system supports resource forks
-	carbonfile = None # True if Mac Carbon file data is supported. 
+	carbonfile = None # True if Mac Carbon file data is supported.
 	name = None # Short string, not used for any technical purpose
 	read_only = None # True if capabilities were determined non-destructively
 	high_perms = None # True if suid etc perms are (read/write) supported
@@ -75,7 +75,7 @@ class FSAbilities:
 				else:
 					assert boolean == 0
 					val_text = 'Off'
-				addline(desc, val_text)			
+				addline(desc, val_text)
 
 		def get_title_line():
 			"""Add the first line, mostly for decoration"""
@@ -185,21 +185,7 @@ class FSAbilities:
 
 	def set_hardlinks(self, testdir):
 		"""Set self.hardlinks to true iff hard linked files can be made"""
-		hl_source = testdir.append("hardlinked_file1")
-		hl_dir = testdir.append("hl")
-		hl_dir.mkdir()
-		hl_dest = hl_dir.append("hardlinked_file2")
-		hl_source.touch()
-		try:
-			hl_dest.hardlink(hl_source.path)
-			if hl_source.getinode() != hl_dest.getinode():
-				raise IOError(errno.EOPNOTSUPP, "Hard links don't compare")
-		except (IOError, OSError, AttributeError):
-			if Globals.preserve_hardlinks != 0:
-				log.Log("Warning: hard linking not supported by filesystem "
-						"at %s" % (self.root_rp.path,), 3)
-			self.hardlinks = None
-		else: self.hardlinks = 1
+		self.hardlinks = 1
 
 	def set_fsync_dirs(self, testdir):
 		"""Set self.fsync_dirs if directories can be fsync'd"""
@@ -417,16 +403,16 @@ class FSAbilities:
 		try:
 			sd = win32security.GetNamedSecurityInfo(dir_rp.path,
 						win32security.SE_FILE_OBJECT,
-						win32security.OWNER_SECURITY_INFORMATION | 
-						win32security.GROUP_SECURITY_INFORMATION | 
+						win32security.OWNER_SECURITY_INFORMATION |
+						win32security.GROUP_SECURITY_INFORMATION |
 						win32security.DACL_SECURITY_INFORMATION)
 			acl = sd.GetSecurityDescriptorDacl()
 			n = acl.GetAceCount()
 			if write:
 				win32security.SetNamedSecurityInfo(dir_rp.path,
 						win32security.SE_FILE_OBJECT,
-						win32security.OWNER_SECURITY_INFORMATION | 
-						win32security.GROUP_SECURITY_INFORMATION | 
+						win32security.OWNER_SECURITY_INFORMATION |
+						win32security.GROUP_SECURITY_INFORMATION |
 						win32security.DACL_SECURITY_INFORMATION,
 						sd.GetSecurityDescriptorOwner(),
 						sd.GetSecurityDescriptorGroup(),
@@ -437,7 +423,7 @@ class FSAbilities:
 					"by filesystem at %s" % dir_rp.path, 4)
 			self.win_acls = 0
 			return
-		
+
 		try:
 			win_acls.init_acls()
 		except (OSError, AttributeError, pywintypes.error):
@@ -589,7 +575,7 @@ class FSAbilities:
 			else:
 				log.Log("escape_trailing_spaces required by filesystem at %s" \
 						% (subdir.path), 4)
-				self.escape_trailing_spaces = 1 
+				self.escape_trailing_spaces = 1
 		except (OSError, IOError):
 			log.Log("escape_trailing_spaces required by filesystem at %s" \
 					% (subdir.path), 4)
@@ -704,7 +690,7 @@ class BackupSetGlobals(SetGlobals):
 	def set_must_escape_trailing_spaces(self, rbdir):
 		"""If local ets or src ets, then must escape """
 		# Disable this for 1.2.4
-		SetConnections.UpdateGlobal('must_escape_trailing_spaces', 0) 
+		SetConnections.UpdateGlobal('must_escape_trailing_spaces', 0)
 		return
 
 		try:
@@ -839,7 +825,7 @@ class RestoreSetGlobals(SetGlobals):
 	def set_must_escape_trailing_spaces(self, rbdir):
 		"""If local ets or src ets, then must escape """
 		# Disable this for 1.2.4
-		SetConnections.UpdateGlobal('must_escape_trailing_spaces', 0) 
+		SetConnections.UpdateGlobal('must_escape_trailing_spaces', 0)
 		return
 
 		if getattr(self, "src_fsa", None) is not None:
@@ -864,7 +850,7 @@ class RestoreSetGlobals(SetGlobals):
 	def set_chars_to_quote(self, rbdir):
 		"""Set chars_to_quote from rdiff-backup-data dir"""
 		if Globals.chars_to_quote is not None: return # already overridden
-		
+
 		ctq_rp = rbdir.append("chars_to_quote")
 		if ctq_rp.lstat():
 			SetConnections.UpdateGlobal("chars_to_quote", ctq_rp.get_data())
